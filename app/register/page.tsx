@@ -2,61 +2,67 @@
 
 import { register } from "./actions"
 import { useState } from "react"
+import { useFormStatus } from "react-dom"
+
+function SubmitButton() {
+  const { pending } = useFormStatus()
+  
+  return (
+    <button 
+      type="submit"
+      disabled={pending}
+      className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold py-2 px-4 rounded transition"
+    >
+      {pending ? 'Memproses...' : 'Daftar'}
+    </button>
+  )
+}
 
 export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
 
-  async function handleRegister(formData: FormData) {
+  async function handleSubmit(formData: FormData) {
     setError(null)
-    setLoading(true)
     try {
       await register(formData)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Terjadi kesalahan saat registrasi')
-    } finally {
-      setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Registrasi</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="bg-gray-800 p-8 rounded-lg shadow-2xl w-full max-w-md border border-gray-700">
+        <h1 className="text-2xl font-bold mb-6 text-center text-white">Registrasi</h1>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div className="mb-4 p-3 bg-red-900 border border-red-700 text-red-200 rounded">
             {error}
           </div>
         )}
 
-        <form action={handleRegister} className="space-y-4">
+        <form action={handleSubmit} className="space-y-4">
           <input 
             name="email" 
             type="email" 
             placeholder="Email" 
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input 
             name="password" 
             type="password" 
             placeholder="Password" 
+            minLength={6}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
-          <button 
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded"
-          >
-            {loading ? 'Memproses...' : 'Daftar'}
-          </button>
+          <SubmitButton />
         </form>
 
-        <p className="mt-4 text-center text-sm">
-          Sudah punya akun? <a href="/login" className="text-blue-500 hover:underline">Login di sini</a>
+        <p className="mt-4 text-center text-sm text-gray-400">
+          Sudah punya akun? <a href="/login" className="text-blue-400 hover:text-blue-300 transition">Login di sini</a>
         </p>
       </div>
     </div>

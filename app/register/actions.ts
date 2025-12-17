@@ -7,15 +7,36 @@ export async function register(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
 
+  if (!email || !password) {
+    throw new Error('Email dan password harus diisi')
+  }
+
+  if (password.length < 6) {
+    throw new Error('Password minimal 6 karakter')
+  }
+
   const supabase = await createClient()
 
-  const { error } = await supabase.auth.signUp({
+  const { error, data } = await supabase.auth.signUp({
     email,
     password,
   })
 
   if (error) {
     throw new Error(error.message)
+  }
+
+  // Auto-confirm email untuk development
+  if (data.user) {
+    try {
+      await supabase.auth.admin.updateUserById(data.user.id, {
+        email_confirm: true,
+      }).catch(() => {
+        // Jika method tidak tersedia, lanjutkan saja
+      })
+    } catch (err) {
+      // Ignore error, user bisa tetap register
+    }
   }
 
   redirect('/login')
