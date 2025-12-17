@@ -11,8 +11,8 @@ export async function middleware(req: NextRequest) {
       cookies: {
         getAll: () => req.cookies.getAll(),
         setAll: (cookies) => {
-          cookies.forEach(({ name, value }) =>
-            res.cookies.set(name, value)
+          cookies.forEach(({ name, value, options }) =>
+            res.cookies.set(name, value, options)
           )
         },
       },
@@ -32,4 +32,8 @@ export async function middleware(req: NextRequest) {
   }
 
   return res
+}
+
+export const config = {
+  matcher: ['/dashboard', '/login', '/register']
 }
