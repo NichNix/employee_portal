@@ -26,16 +26,13 @@ export async function register(formData: FormData) {
     throw new Error(error.message)
   }
 
-  // Auto-confirm email untuk development
   if (data.user) {
     try {
       await supabase.auth.admin.updateUserById(data.user.id, {
         email_confirm: true,
       }).catch(() => {
-        // Jika method tidak tersedia, lanjutkan saja
       })
     } catch (err) {
-      // Ignore error, user bisa tetap register
     }
   }
 

@@ -15,16 +15,13 @@ export async function login(formData: FormData) {
   })
 
   if (error) {
-    // Jika email belum confirmed, auto-confirm dan login
     if (error.message.includes('Email not confirmed')) {
       try {
-        // Try to confirm email
         const { error: updateError } = await supabase.from('auth.users')
           .update({ email_confirmed_at: new Date().toISOString() })
           .eq('email', email)
         
         if (!updateError) {
-          // Retry login
           const { error: retryError } = await supabase.auth.signInWithPassword({
             email,
             password,
